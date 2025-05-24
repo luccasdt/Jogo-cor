@@ -20,7 +20,7 @@
             border-radius: 50%;
             cursor: pointer;
             border: 2px solid #f9fafb;
-            margin-top: -8px;
+            margin-top: -8px; /* Adjust for track height */
         }
         .slider-thumb::-moz-range-thumb {
             width: 22px;
@@ -33,7 +33,7 @@
             height: 6px;
             border-radius: 3px;
         }
-        .popup, .history-popup { /* Combined common styles */
+        .popup, .history-popup, .difficulty-popup { /* Combined common styles */
             display: none;
             position: fixed;
             z-index: 100;
@@ -42,31 +42,31 @@
             width: 100%;
             height: 100%;
             overflow: auto;
-            background-color: rgba(0,0,0,0.75); /* Slightly darker overlay */
+            background-color: rgba(0,0,0,0.75);
             align-items: center;
             justify-content: center;
-            padding: 1rem; /* Padding for the overlay itself */
+            padding: 1rem;
         }
-        .popup-content, .history-popup-content { /* Combined common styles */
+        .popup-content, .history-popup-content, .difficulty-popup-content { /* Combined common styles */
             background-color: #1f2937; /* bg-gray-800 */
             color: #d1d5db; /* text-gray-300 */
             margin: auto;
             padding: 24px;
             border: 1px solid #374151; /* bg-gray-700 */
             width: 90%;
-            max-width: 450px; /* Slightly wider for history */
+            max-width: 450px;
             border-radius: 12px;
             text-align: center;
             box-shadow: 0 10px 25px -5px rgba(0,0,0,0.3), 0 20px 40px -20px rgba(0,0,0,0.5);
-            position: relative; /* For absolute positioning of close button */
+            position: relative;
         }
-        .history-popup-content {
-             max-height: 80vh; /* Max height for history popup */
-             overflow-y: auto; /* Scroll for long history */
+        .history-popup-content, .difficulty-popup-content {
+             max-height: 80vh;
+             overflow-y: auto;
         }
         .close-button {
             color: #9ca3af;
-            position: absolute; /* Positioned relative to popup-content */
+            position: absolute;
             top: 12px;
             right: 16px;
             font-size: 32px;
@@ -98,19 +98,15 @@
         button.focus-visible:focus { box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.5); }
 
         .history-item {
-            background-color: #374151; /* bg-gray-700 */
+            background-color: #374151;
             padding: 12px;
             margin-bottom: 10px;
             border-radius: 8px;
             text-align: left;
-            font-size: 0.875rem; /* text-sm */
+            font-size: 0.875rem;
         }
-        .history-item p {
-            margin-bottom: 4px;
-        }
-        .history-item strong {
-            color: #a5b4fc; /* indigo-300 */
-        }
+        .history-item p { margin-bottom: 4px; }
+        .history-item strong { color: #a5b4fc; }
         .history-color-preview {
             display: inline-block;
             width: 1em;
@@ -118,18 +114,32 @@
             border-radius: 3px;
             margin-right: 0.5em;
             vertical-align: middle;
-            border: 1px solid #4b5563; /* gray-600 */
+            border: 1px solid #4b5563;
+        }
+        .difficulty-btn {
+            width: 100%;
+            margin-bottom: 0.75rem; /* 12px */
+        }
+        .difficulty-btn.active {
+            background-color: #4f46e5; /* indigo-600 */
+            color: white;
+            border: 2px solid #818cf8; /* indigo-400 */
         }
     </style>
 </head>
 <body class="flex flex-col items-center justify-center min-h-screen p-4">
 
     <div class="w-full max-w-md bg-gray-800 p-6 sm:p-8 rounded-xl shadow-2xl relative">
-        <button id="historyButton" class="absolute top-4 right-4 bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold py-2 px-3 rounded-lg text-sm shadow-md focus-visible btn-active">
-            Histórico
-        </button>
+        <div class="absolute top-4 right-4 flex space-x-2">
+            <button id="difficultyButton" class="bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold py-2 px-3 rounded-lg text-sm shadow-md focus-visible btn-active">
+                Dificuldade: <span id="currentDifficultyDisplay">Difícil</span>
+            </button>
+            <button id="historyButton" class="bg-gray-700 hover:bg-gray-600 text-gray-300 font-semibold py-2 px-3 rounded-lg text-sm shadow-md focus-visible btn-active">
+                Histórico
+            </button>
+        </div>
 
-        <h1 class="text-3xl font-bold text-center text-gray-100 mb-8 pt-8 sm:pt-0">Adivinhe a Cor</h1>
+        <h1 class="text-3xl font-bold text-center text-gray-100 mb-8 pt-12 sm:pt-8">Adivinhe a Cor</h1>
 
         <div class="flex justify-around mb-8 space-x-4">
             <div class="w-1/2 aspect-square rounded-lg shadow-lg flex items-center justify-center border-2 border-gray-700" id="targetColorSquare">
@@ -143,7 +153,7 @@
         <div class="space-y-6 mb-8">
             <div>
                 <label for="redSlider" class="block text-sm font-medium text-gray-300 mb-1">Vermelho: <span id="redValue" class="font-semibold">128</span></label>
-                <input type="range" id="redSlider" min="0" max="255" value="128" class="w-full appearance-none cursor-pointer slider-thumb slider-track focus-visible">
+                <input type="range" id="redSlider" min="0" max="255" value="128" step="1" class="w-full appearance-none cursor-pointer slider-thumb slider-track focus-visible">
                 <div class="flex justify-between items-center mt-2.5">
                     <button id="redDecrement" class="adjust-btn bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold shadow-md btn-active focus-visible">-</button>
                     <button id="redIncrement" class="adjust-btn bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold shadow-md btn-active focus-visible">+</button>
@@ -151,7 +161,7 @@
             </div>
             <div>
                 <label for="greenSlider" class="block text-sm font-medium text-gray-300 mb-1">Verde: <span id="greenValue" class="font-semibold">128</span></label>
-                <input type="range" id="greenSlider" min="0" max="255" value="128" class="w-full appearance-none cursor-pointer slider-thumb slider-track focus-visible">
+                <input type="range" id="greenSlider" min="0" max="255" value="128" step="1" class="w-full appearance-none cursor-pointer slider-thumb slider-track focus-visible">
                 <div class="flex justify-between items-center mt-2.5">
                     <button id="greenDecrement" class="adjust-btn bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold shadow-md btn-active focus-visible">-</button>
                     <button id="greenIncrement" class="adjust-btn bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold shadow-md btn-active focus-visible">+</button>
@@ -159,7 +169,7 @@
             </div>
             <div>
                 <label for="blueSlider" class="block text-sm font-medium text-gray-300 mb-1">Azul: <span id="blueValue" class="font-semibold">128</span></label>
-                <input type="range" id="blueSlider" min="0" max="255" value="128" class="w-full appearance-none cursor-pointer slider-thumb slider-track focus-visible">
+                <input type="range" id="blueSlider" min="0" max="255" value="128" step="1" class="w-full appearance-none cursor-pointer slider-thumb slider-track focus-visible">
                 <div class="flex justify-between items-center mt-2.5">
                     <button id="blueDecrement" class="adjust-btn bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold shadow-md btn-active focus-visible">-</button>
                     <button id="blueIncrement" class="adjust-btn bg-gray-700 hover:bg-gray-600 text-gray-200 font-bold shadow-md btn-active focus-visible">+</button>
@@ -210,28 +220,48 @@
         </div>
     </div>
 
+    <div id="difficultyPopup" class="difficulty-popup">
+        <div class="difficulty-popup-content">
+            <span class="close-button" id="closeDifficultyPopup">&times;</span>
+            <h2 class="text-2xl font-semibold mb-6 text-gray-100">Escolha a Dificuldade</h2>
+            <div class="space-y-3">
+                <button id="difficultyEasy" data-difficulty="easy" class="difficulty-btn bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold py-3 px-4 rounded-lg shadow-md focus-visible btn-active">
+                    Fácil (incremento 10, alvo múltiplo de 10)
+                </button>
+                <button id="difficultyMedium" data-difficulty="medium" class="difficulty-btn bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold py-3 px-4 rounded-lg shadow-md focus-visible btn-active">
+                    Médio (incremento 5, alvo múltiplo de 5)
+                </button>
+                <button id="difficultyHard" data-difficulty="hard" class="difficulty-btn bg-gray-700 hover:bg-gray-600 text-gray-200 font-semibold py-3 px-4 rounded-lg shadow-md focus-visible btn-active">
+                    Difícil (incremento 1, alvo qualquer)
+                </button>
+            </div>
+        </div>
+    </div>
 
     <script>
         // DOM Elements
         const targetColorSquare = document.getElementById('targetColorSquare');
         const userColorSquare = document.getElementById('userColorSquare');
-        const redSlider = document.getElementById('redSlider');
-        const greenSlider = document.getElementById('greenSlider');
-        const blueSlider = document.getElementById('blueSlider');
-        const redValueSpan = document.getElementById('redValue');
-        const greenValueSpan = document.getElementById('greenValue');
-        const blueValueSpan = document.getElementById('blueValue');
+        const sliders = {
+            red: document.getElementById('redSlider'),
+            green: document.getElementById('greenSlider'),
+            blue: document.getElementById('blueSlider')
+        };
+        const valueSpans = {
+            red: document.getElementById('redValue'),
+            green: document.getElementById('greenValue'),
+            blue: document.getElementById('blueValue')
+        };
         const confirmButton = document.getElementById('confirmButton');
-        const mainRestartButton = document.getElementById('mainRestartButton'); // Renamed from restartButton
+        const mainRestartButton = document.getElementById('mainRestartButton');
 
-        const redDecrement = document.getElementById('redDecrement');
-        const redIncrement = document.getElementById('redIncrement');
-        const greenDecrement = document.getElementById('greenDecrement');
-        const greenIncrement = document.getElementById('greenIncrement');
-        const blueDecrement = document.getElementById('blueDecrement');
-        const blueIncrement = document.getElementById('blueIncrement');
+        const adjustButtons = {
+            red: { dec: document.getElementById('redDecrement'), inc: document.getElementById('redIncrement') },
+            green: { dec: document.getElementById('greenDecrement'), inc: document.getElementById('greenIncrement') },
+            blue: { dec: document.getElementById('blueDecrement'), inc: document.getElementById('blueIncrement') }
+        };
 
-        // Score Popup Elements
+        // Score Popup
         const scorePopup = document.getElementById('scorePopup');
         const closeScorePopup = document.getElementById('closeScorePopup');
         const popupTitle = document.getElementById('popupTitle');
@@ -241,7 +271,7 @@
         const popupEditButton = document.getElementById('popupEditButton');
         const popupRestartButton = document.getElementById('popupRestartButton');
 
-        // History Elements
+        // History
         const historyButton = document.getElementById('historyButton');
         const historyPopup = document.getElementById('historyPopup');
         const closeHistoryPopup = document.getElementById('closeHistoryPopup');
@@ -249,33 +279,52 @@
         const noHistoryText = document.getElementById('noHistoryText');
         const clearHistoryButton = document.getElementById('clearHistoryButton');
 
+        // Difficulty
+        const difficultyButton = document.getElementById('difficultyButton');
+        const currentDifficultyDisplay = document.getElementById('currentDifficultyDisplay');
+        const difficultyPopup = document.getElementById('difficultyPopup');
+        const closeDifficultyPopup = document.getElementById('closeDifficultyPopup');
+        const difficultyEasyBtn = document.getElementById('difficultyEasy');
+        const difficultyMediumBtn = document.getElementById('difficultyMedium');
+        const difficultyHardBtn = document.getElementById('difficultyHard');
 
         let targetRed, targetGreen, targetBlue;
-        let scoreHistory = []; // Array to store score history
+        let scoreHistory = [];
+        let currentDifficulty = 'hard'; // Default difficulty
+
+        const difficultySettings = {
+            easy: { increment: 10, multiple: 10, name: 'Fácil' },
+            medium: { increment: 5, multiple: 5, name: 'Médio' },
+            hard: { increment: 1, multiple: 1, name: 'Difícil' }
+        };
 
         // --- Core Game Logic ---
-        function randomColorComponent() { return Math.floor(Math.random() * 256); }
+        function generateRandomComponent(multiple) {
+            const numSteps = Math.floor(255 / multiple);
+            return Math.floor(Math.random() * (numSteps + 1)) * multiple;
+        }
 
         function setRandomTargetColor() {
-            targetRed = randomColorComponent();
-            targetGreen = randomColorComponent();
-            targetBlue = randomColorComponent();
+            const { multiple } = difficultySettings[currentDifficulty];
+            targetRed = generateRandomComponent(multiple);
+            targetGreen = generateRandomComponent(multiple);
+            targetBlue = generateRandomComponent(multiple);
             targetColorSquare.style.backgroundColor = `rgb(${targetRed}, ${targetGreen}, ${targetBlue})`;
         }
 
         function updateUserColor() {
-            const r = parseInt(redSlider.value);
-            const g = parseInt(greenSlider.value);
-            const b = parseInt(blueSlider.value);
+            const r = parseInt(sliders.red.value);
+            const g = parseInt(sliders.green.value);
+            const b = parseInt(sliders.blue.value);
 
-            redValueSpan.textContent = r;
-            greenValueSpan.textContent = g;
-            blueValueSpan.textContent = b;
+            valueSpans.red.textContent = r;
+            valueSpans.green.textContent = g;
+            valueSpans.blue.textContent = b;
             userColorSquare.style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
 
-            redSlider.style.background = `linear-gradient(to right, rgb(0, ${g}, ${b}), rgb(255, ${g}, ${b}))`;
-            greenSlider.style.background = `linear-gradient(to right, rgb(${r}, 0, ${b}), rgb(${r}, 255, ${b}))`;
-            blueSlider.style.background = `linear-gradient(to right, rgb(${r}, ${g}, 0), rgb(${r}, ${g}, 255))`;
+            sliders.red.style.background = `linear-gradient(to right, rgb(0, ${g}, ${b}), rgb(255, ${g}, ${b}))`;
+            sliders.green.style.background = `linear-gradient(to right, rgb(${r}, 0, ${b}), rgb(${r}, 255, ${b}))`;
+            sliders.blue.style.background = `linear-gradient(to right, rgb(${r}, ${g}, 0), rgb(${r}, ${g}, 255))`;
 
             document.documentElement.style.setProperty('--red-thumb-color', `rgb(${r}, 60, 60)`);
             document.documentElement.style.setProperty('--green-thumb-color', `rgb(60, ${g}, 60)`);
@@ -289,6 +338,34 @@
             return diffR + diffG + diffB;
         }
 
+        // --- Difficulty Handling ---
+        function applyDifficulty(level) {
+            currentDifficulty = level;
+            const { increment, name } = difficultySettings[level];
+
+            currentDifficultyDisplay.textContent = name;
+
+            // Update slider steps
+            sliders.red.step = increment;
+            sliders.green.step = increment;
+            sliders.blue.step = increment;
+
+            // Update active button style in difficulty popup
+            [difficultyEasyBtn, difficultyMediumBtn, difficultyHardBtn].forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.difficulty === level) {
+                    btn.classList.add('active');
+                }
+            });
+
+            performRestartGame(); // Restart game with new difficulty
+            hideDifficultyPopup();
+        }
+
+        function showDifficultyPopup() { difficultyPopup.style.display = 'flex'; }
+        function hideDifficultyPopup() { difficultyPopup.style.display = 'none'; }
+
+
         // --- Popup Handling ---
         function showScorePopup(differenceScore, targetRgb, userRgb) {
             scoreValueSpan.textContent = differenceScore;
@@ -296,9 +373,9 @@
             userRgbValueSpan.textContent = `(${userRgb.r}, ${userRgb.g}, ${userRgb.b})`;
 
             if (differenceScore === 0) popupTitle.textContent = "Perfeito! 🎉";
-            else if (differenceScore <= 15) popupTitle.textContent = "Quase lá! Excelente! 👍";
-            else if (differenceScore <= 45) popupTitle.textContent = "Muito Bom! 😊";
-            else if (differenceScore <= 100) popupTitle.textContent = "Bom Esforço! 🙂";
+            else if (differenceScore <= 15 * difficultySettings[currentDifficulty].multiple) popupTitle.textContent = "Quase lá! Excelente! 👍";
+            else if (differenceScore <= 45 * difficultySettings[currentDifficulty].multiple) popupTitle.textContent = "Muito Bom! 😊";
+            else if (differenceScore <= 100 * difficultySettings[currentDifficulty].multiple) popupTitle.textContent = "Bom Esforço! 🙂";
             else popupTitle.textContent = "Continue Tentando! 🤔";
             scorePopup.style.display = 'flex';
         }
@@ -307,21 +384,18 @@
         // --- History Handling ---
         function addToHistory(targetColor, userColor, difference) {
             const timestamp = new Date();
-            scoreHistory.unshift({ // Add to the beginning for newest first
-                target: targetColor,
-                user: userColor,
-                diff: difference,
-                time: timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + ' ' + timestamp.toLocaleDateString('pt-BR')
+            scoreHistory.unshift({
+                target: targetColor, user: userColor, diff: difference,
+                time: timestamp.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) + ' ' + timestamp.toLocaleDateString('pt-BR'),
+                difficulty: difficultySettings[currentDifficulty].name
             });
             renderHistory();
         }
 
         function renderHistory() {
-            // Clear previous items except the 'no history' text
             while (historyListContainer.firstChild && historyListContainer.firstChild !== noHistoryText) {
                 historyListContainer.removeChild(historyListContainer.firstChild);
             }
-
             if (scoreHistory.length === 0) {
                 noHistoryText.style.display = 'block';
             } else {
@@ -330,77 +404,88 @@
                     const historyDiv = document.createElement('div');
                     historyDiv.className = 'history-item';
                     historyDiv.innerHTML = `
-                        <p><strong>Diferença:</strong> ${item.diff}</p>
+                        <p><strong>Diferença:</strong> ${item.diff} (Dificuldade: ${item.difficulty})</p>
                         <p><span class="history-color-preview" style="background-color: rgb(${item.target.r},${item.target.g},${item.target.b});"></span><strong>Alvo:</strong> rgb(${item.target.r}, ${item.target.g}, ${item.target.b})</p>
                         <p><span class="history-color-preview" style="background-color: rgb(${item.user.r},${item.user.g},${item.user.b});"></span><strong>Sua Cor:</strong> rgb(${item.user.r}, ${item.user.g}, ${item.user.b})</p>
                         <p class="text-xs text-gray-500">${item.time}</p>
                     `;
-                    historyListContainer.insertBefore(historyDiv, noHistoryText); // Insert before 'no history' text
+                    historyListContainer.insertBefore(historyDiv, noHistoryText);
                 });
             }
         }
-
-        function showHistoryPopup() {
-            renderHistory(); // Ensure it's up-to-date when shown
-            historyPopup.style.display = 'flex';
-        }
+        function showHistoryPopup() { renderHistory(); historyPopup.style.display = 'flex'; }
         function hideHistoryPopup() { historyPopup.style.display = 'none'; }
-
         function clearHistory() {
-            if (confirm("Tem certeza que deseja limpar todo o histórico de pontuações?")) {
-                scoreHistory = [];
-                renderHistory();
+            // Changed confirm to a simpler approach as it's problematic in iframes
+            if (scoreHistory.length > 0 && window.prompt("Para limpar o histórico, digite 'SIM'") === "SIM") {
+                 scoreHistory = [];
+                 renderHistory();
+            } else if (scoreHistory.length === 0) {
+                // If no history, maybe show a small message or do nothing
+                const tempMsg = document.createElement('p');
+                tempMsg.textContent = "Histórico já está vazio.";
+                tempMsg.className = "text-sm text-yellow-400 text-center";
+                historyListContainer.appendChild(tempMsg);
+                setTimeout(() => tempMsg.remove(), 2000);
             }
         }
 
-
         // --- Event Listeners ---
-        redSlider.addEventListener('input', updateUserColor);
-        greenSlider.addEventListener('input', updateUserColor);
-        blueSlider.addEventListener('input', updateUserColor);
+        ['red', 'green', 'blue'].forEach(color => {
+            sliders[color].addEventListener('input', updateUserColor);
+        });
 
-        function setupAdjustButtonListeners(sliderElement, decrementButton, incrementButton) {
-            decrementButton.addEventListener('click', () => {
-                sliderElement.value = Math.max(0, parseInt(sliderElement.value) - 1);
-                updateUserColor();
-            });
-            incrementButton.addEventListener('click', () => {
-                sliderElement.value = Math.min(255, parseInt(sliderElement.value) + 1);
-                updateUserColor();
+
+        function setupAdjustButtonListeners() {
+            const { increment } = difficultySettings[currentDifficulty];
+            ['red', 'green', 'blue'].forEach(color => {
+                adjustButtons[color].dec.onclick = () => {
+                    let val = parseInt(sliders[color].value);
+                    sliders[color].value = Math.max(0, val - increment);
+                    // Ensure value is a multiple of increment if slider step doesn't handle it perfectly
+                    sliders[color].value = Math.round(sliders[color].value / increment) * increment;
+                    updateUserColor();
+                };
+                adjustButtons[color].inc.onclick = () => {
+                    let val = parseInt(sliders[color].value);
+                    sliders[color].value = Math.min(255, val + increment);
+                     sliders[color].value = Math.round(sliders[color].value / increment) * increment;
+                     if (sliders[color].value > 255) sliders[color].value = Math.floor(255 / increment) * increment; // Cap at max multiple
+                    updateUserColor();
+                };
             });
         }
-        setupAdjustButtonListeners(redSlider, redDecrement, redIncrement);
-        setupAdjustButtonListeners(greenSlider, greenDecrement, greenIncrement);
-        setupAdjustButtonListeners(blueSlider, blueDecrement, blueIncrement);
 
         confirmButton.addEventListener('click', () => {
-            const userR = parseInt(redSlider.value);
-            const userG = parseInt(greenSlider.value);
-            const userB = parseInt(blueSlider.value);
+            const userR = parseInt(sliders.red.value);
+            const userG = parseInt(sliders.green.value);
+            const userB = parseInt(sliders.blue.value);
             const target = { r: targetRed, g: targetGreen, b: targetBlue };
             const user = { r: userR, g: userG, b: userB };
             const difference = calculateScore(target.r, target.g, target.b, user.r, user.g, user.b);
-
             showScorePopup(difference, target, user);
-            addToHistory(target, user, difference); // Add to history on confirm
+            addToHistory(target, user, difference);
         });
 
         function performRestartGame() {
             setRandomTargetColor();
-            redSlider.value = 128;
-            greenSlider.value = 128;
-            blueSlider.value = 128;
+            const { increment } = difficultySettings[currentDifficulty];
+            // Reset sliders to a mid-range multiple of the current increment
+            const midValueBase = 128;
+            const resetValue = Math.round(midValueBase / increment) * increment;
+
+            sliders.red.value = Math.min(255, resetValue); // Ensure not over 255
+            sliders.green.value = Math.min(255, resetValue);
+            sliders.blue.value = Math.min(255, resetValue);
             updateUserColor();
+            setupAdjustButtonListeners(); // Re-setup with new increment
         }
 
-        mainRestartButton.addEventListener('click', () => {
-            performRestartGame();
-            // Decided not to clear history on main restart, user can use "Clear History" button
-        });
+        mainRestartButton.addEventListener('click', performRestartGame);
 
         // Score Popup Buttons
         closeScorePopup.addEventListener('click', hideScorePopup);
-        popupEditButton.addEventListener('click', hideScorePopup); // Just closes to allow editing
+        popupEditButton.addEventListener('click', hideScorePopup);
         popupRestartButton.addEventListener('click', () => {
             hideScorePopup();
             performRestartGame();
@@ -411,16 +496,22 @@
         closeHistoryPopup.addEventListener('click', hideHistoryPopup);
         clearHistoryButton.addEventListener('click', clearHistory);
 
+        // Difficulty Popup Buttons
+        difficultyButton.addEventListener('click', showDifficultyPopup);
+        closeDifficultyPopup.addEventListener('click', hideDifficultyPopup);
+        difficultyEasyBtn.addEventListener('click', () => applyDifficulty('easy'));
+        difficultyMediumBtn.addEventListener('click', () => applyDifficulty('medium'));
+        difficultyHardBtn.addEventListener('click', () => applyDifficulty('hard'));
 
-        // Close popups if user clicks outside content
         window.addEventListener('click', (event) => {
             if (event.target === scorePopup) hideScorePopup();
             if (event.target === historyPopup) hideHistoryPopup();
+            if (event.target === difficultyPopup) hideDifficultyPopup();
         });
 
         // --- Initialization ---
         function initializeApp() {
-            performRestartGame(); // Initial setup includes setting a target and updating UI
+            applyDifficulty(currentDifficulty); // Apply default difficulty (which also calls performRestartGame)
 
             const styleSheet = document.createElement("style");
             styleSheet.innerText = `
@@ -432,12 +523,11 @@
                 #blueSlider::-moz-range-thumb { background-color: var(--blue-thumb-color, #3B82F6); }
             `;
             document.head.appendChild(styleSheet);
-            updateUserColor(); // Ensure thumbs pick up initial CSS var values
-            renderHistory(); // Initial render of history (will show "no history")
+            updateUserColor();
+            renderHistory();
         }
 
         document.addEventListener('DOMContentLoaded', initializeApp);
     </script>
 </body>
 </html>
-
